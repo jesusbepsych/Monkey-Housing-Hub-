@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Housing Hub">
+<title>Housing Hub — SB/IV/Goleta</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Fraunces:ital,wght@0,700;1,400&display=swap');
+  :root {
+    --bg:#0d0f13; --s1:#151820; --s2:#1c2029; --s3:#252a35;
+    --bdr:#2c3240; --txt:#dfe2e8; --dim:#8a92a4; --acc:#3dd6a7;
+    --yel:#f0c348; --red:#f07070; --blu:#5ca0f0; --pur:#b080f0;
+    --radius:14px;
+    --c-coop:#3dd6a7; --c-sb:#5ca0f0; --c-lom:#f0c348; --c-sm:#b080f0; --c-res:#f0a050; --c-free:#34d399;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);line-height:1.55;
+    padding:env(safe-area-inset-top) 0 calc(60px + env(safe-area-inset-bottom)) 0;overflow-x:hidden;}
+  a{color:var(--blu);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* ── NAV BAR ── */
+  .nav{position:fixed;bottom:0;left:0;right:0;z-index:100;
+    background:var(--s1);border-top:1px solid var(--bdr);
+    display:flex;justify-content:space-around;align-items:center;
+    padding:6px 0 calc(6px + env(safe-area-inset-bottom));
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+  .nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;
+    background:none;border:none;color:var(--dim);font-size:10px;
+    font-family:inherit;padding:4px 8px;cursor:pointer;transition:.15s;}
+  .nav-btn.active{color:var(--acc);}
+  .nav-btn .ico{font-size:20px;line-height:1;}
+
+  /* ── PAGES ── */
+  .page{display:none;padding:16px 16px 24px;max-width:800px;margin:0 auto;}
+  .page.active{display:block;}
+  .page-title{font-family:'Fraunces',serif;font-size:1.65rem;color:var(--acc);margin-bottom:4px;}
+  .page-sub{color:var(--dim);font-size:.85rem;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bdr);}
+
+  /* ── CARDS ── */
+  .card{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--radius);
+    padding:14px 16px;margin-bottom:10px;transition:border-color .2s;}
+  .card:active{border-color:var(--acc);}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px;}
+  .card-name{font-weight:700;font-size:.95rem;}
+  .card-price{font-weight:700;font-size:.9rem;white-space:nowrap;padding:2px 10px;border-radius:6px;flex-shrink:0;}
+  .p-green{background:#132e22;color:var(--acc);} .p-yel{background:#302c14;color:var(--yel);}
+  .p-blu{background:#142640;color:var(--blu);} .p-free{background:#0e2e1e;color:#34d399;}
+  .card-loc{font-size:.8rem;color:var(--dim);margin-bottom:4px;}
+  .card-desc{font-size:.85rem;color:var(--dim);line-height:1.5;}
+  .card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+  .tag{font-size:.68rem;padding:2px 7px;border-radius:4px;background:var(--s2);color:var(--dim);border:1px solid var(--bdr);}
+  .tag-g{border-color:#2a5040;color:var(--acc);} .tag-w{border-color:#5c2a2a;color:var(--red);}
+  .tag-i{border-color:#2a3a5c;color:var(--blu);}
+  .card-link{display:inline-block;margin-top:6px;font-size:.82rem;color:var(--blu);font-weight:500;}
+
+  /* ── CATEGORY COLOR CODING ── */
+  .cat-sb .card{border-left:3px solid var(--c-sb);}
+  .cat-lom .card{border-left:3px solid var(--c-lom);}
+  .cat-sm .card{border-left:3px solid var(--c-sm);}
+  .cat-coop .card{border-left:3px solid var(--c-coop);}
+  .cat-free{border-left-color:var(--c-free) !important;}
+  .cnt-sb{background:#142640;color:var(--c-sb);} .cnt-lom{background:#302c14;color:var(--c-lom);}
+  .cnt-sm{background:#221640;color:var(--c-sm);} .cnt-coop{background:#132e22;color:var(--c-coop);}
+  .cnt-res{background:#2e2010;color:var(--c-res);}
+
+  /* ── SECTION HEADERS ── */
+  .sec-head{display:flex;align-items:center;gap:8px;margin:20px 0 10px;}
+  .sec-head .ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+  .sec-head h2{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;}
+  .sec-count{font-size:.7rem;color:var(--dim);background:var(--s2);padding:2px 8px;border-radius:10px;margin-left:4px;}
+
+  /* ── INFO BOX ── */
+  .info{background:var(--s2);border-left:3px solid var(--acc);padding:10px 12px;
+    font-size:.82rem;color:var(--dim);border-radius:0 10px 10px 0;margin-bottom:12px;line-height:1.55;}
+  .info b{color:var(--txt);}
+
+  /* ── RESOURCE CARD ── */
+  .res-card{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;}
+  .res-card h3{font-size:1rem;margin-bottom:6px;color:var(--txt);}
+  .res-card p{font-size:.85rem;color:var(--dim);line-height:1.5;margin-bottom:6px;}
+  .res-card .links{display:flex;flex-direction:column;gap:4px;}
+  .res-card .links a{font-size:.84rem;padding:6px 0;}
+
+  /* ── HEADER BAR ── */
+  .header-bar{position:sticky;top:0;z-index:50;background:var(--bg);padding:12px 16px 8px;
+    border-bottom:1px solid var(--bdr);margin:-16px -16px 16px;backdrop-filter:blur(12px);}
+  .header-bar h1{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--acc);}
+
+  .ig-list{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:8px;}
+  .ig-list a{font-size:.82rem;color:var(--pur);}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ PAGE 1: CO-OPS ═══════════════ -->
+<div class="page active" id="pg-coops">
+  <div class="header-bar"><h1 style="color:var(--c-coop);">🏠 SBSHC Co-op Housing</h1></div>
+
+  <div class="info">
+    <b>The cheapest legitimate housing near UCSB.</b> 5 houses, ~100 residents. Average double ≈ $1,000/mo <b>all-inclusive</b> (rent, meals, utilities, internet, supplies). Merton's low-income scholarship drops this to ~$500–700. Must be enrolled at UCSB, SBCC, or any SB County post-secondary school.
+  </div>
+
+  <div class="res-card">
+    <h3>📝 How to Apply</h3>
+    <p>Applications accepted on a <b>rolling first-come, first-served basis</b>. Apply ASAP for best chances. Summer 2026: June 19 – Sept 16. School Year 2026–27: Sept 19 – June 15.</p>
+    <div class="links">
+      <a href="https://forms.gle/AtU7NBE7d491HPjs7" target="_blank">📋 Summer 2026 & School Year 2026–27 Application →</a>
+      <a href="https://forms.gle/gaGnKShvkZ2yxSL39" target="_blank">📋 Winter & Spring 2026 Application (Immediate) →</a>
+      <a href="https://docs.google.com/spreadsheets/d/1kV8C2KAUC1c242OmWV8Q8Y0biPDgLBzg_d-Uwv84PDY/edit?gid=1918075102#gid=1918075102" target="_blank">📊 2026–27 Vacancy List →</a>
+      <a href="https://docs.google.com/spreadsheets/d/1kV8C2KAUC1c242OmWV8Q8Y0biPDgLBzg_d-Uwv84PDY/edit#gid=1819539454" target="_blank">📊 Current Vacancy List →</a>
+      <a href="https://docs.google.com/spreadsheets/d/1YicdDuKR_483lLeXYRqP5jXCaZksh01Q94ZX5mmCh-4/edit?gid=0#gid=0" target="_blank">💰 Current Rates Spreadsheet →</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-top"><span class="card-name">🏡 Merton House — Interfaith Theme</span><span class="card-price p-green">~$500–700*</span></div>
+    <div class="card-loc">📍 777 Camino Pescadero, Isla Vista</div>
+    <div class="card-desc">18 residents, 12 bedrooms. Shared kitchen, living room, large communal bathroom. Garden for food. Downstairs: SBSHC Central Office, meeting rooms, mini library, auditorium. <b>*Low-income UCSB students get a scholarship that significantly reduces rent</b> — the most affordable student housing in IV. Rate covers meals, electricity, gas, water, trash, internet.</div>
+    <div class="card-tags"><span class="tag tag-g">Meals included</span><span class="tag tag-g">All utilities</span><span class="tag tag-i">Low-income scholarship</span></div>
+    <a class="card-link" href="https://www.sbcoop.org/housing.html" target="_blank">Visit sbcoop.org →</a>
+  </div>
+
+  <div class="card">
+    <div class="card-top"><span class="card-name">✊ Biko House — People of Color Theme</span><span class="card-price p-yel">~$1,000</span></div>
+    <div class="card-loc">📍 Sueno Road, Isla Vista</div>
+    <div class="card-desc">18 members, 12 bedrooms, 6 bathrooms. Safe space for students of color. Large industrial kitchen, stocked pantry, mandatory meal plan (meat + vegan options). Garage = community art/music/workshop space ("Biko Infoshop"). Rate covers gas, electric, water, trash, fiber internet, meal plan.</div>
+    <div class="card-tags"><span class="tag tag-g">Meals included</span><span class="tag tag-g">All utilities</span><span class="tag tag-g">Community infoshop</span></div>
+    <a class="card-link" href="https://www.sbcoop.org/housing.html" target="_blank">Visit sbcoop.org →</a>
+  </div>
+
+  <div class="card">
+    <div class="card-top"><span class="card-name">🌿 Dolores House — Vegetarian/Vegan Theme</span><span class="card-price p-yel">~$1,000</span></div>
+    <div class="card-loc">📍 6700 block Sabado Tarde, Isla Vista (closest co-op to beach)</div>
+    <div class="card-desc">15 residents, 9 bedrooms, 3 bathrooms. Organic produce from IV Food Co-op & farmers' markets. Garden, fire pit, ocean breeze. Kitchen is the social hub. Rate covers water, trash, electricity, gas, fiber internet, vegetarian meal plan.</div>
+    <div class="card-tags"><span class="tag tag-g">Meals included</span><span class="tag tag-g">All utilities</span><span class="tag">Vegetarian/vegan only</span></div>
+    <a class="card-link" href="https://www.sbcoop.org/housing.html" target="_blank">Visit sbcoop.org →</a>
+  </div>
+
+  <div class="card">
+    <div class="card-top"><span class="card-name">🌳 Manley House — First Communal Co-op</span><span class="card-price p-yel">~$1,000</span></div>
+    <div class="card-loc">📍 Embarcadero del Norte & Cervantes, Isla Vista</div>
+    <div class="card-desc">17 members, 11 bedrooms across 2 units. 3 avocado trees, loquat tree, passionfruit vine. Swinging bench, hammock, solar panels, movie projector, annual prom. Quiet & laid-back. Rate covers electricity, gas, water, trash, fiber internet, meal plan.</div>
+    <div class="card-tags"><span class="tag tag-g">Meals included</span><span class="tag tag-g">All utilities</span><span class="tag tag-g">Solar panels</span></div>
+    <a class="card-link" href="https://www.sbcoop.org/housing.html" target="_blank">Visit sbcoop.org →</a>
+  </div>
+
+  <div class="card">
+    <div class="card-top"><span class="card-name">🌈 Newman House — LGBTQ+ Theme</span><span class="card-price p-yel">~$800–1,000</span></div>
+    <div class="card-loc">📍 Madrid Road, Isla Vista (right next to campus)</div>
+    <div class="card-desc">27–30 residents. 6 two-bedroom/1-bath units + 3 studios. <b>Most privacy of any co-op</b> — each unit has its own kitchen. No mandatory meal plan (weekly potlucks instead). Fire pit, gardens, composting, murals. Rate covers water, trash, gas, electricity, fiber internet.</div>
+    <div class="card-tags"><span class="tag tag-g">Has studios</span><span class="tag tag-g">Own kitchen</span><span class="tag tag-g">All utilities</span><span class="tag">No meal plan</span></div>
+    <a class="card-link" href="https://www.sbcoop.org/housing.html" target="_blank">Visit sbcoop.org →</a>
+  </div>
+
+  <div class="res-card" style="margin-top:16px;">
+    <h3>📞 Contact SBSHC</h3>
+    <p><b>Phone:</b> (805) 685-6964<br><b>General:</b> info@sbcoop.org<br><b>Member Services:</b> anbareen@sbcoop.org<br><b>Executive Director:</b> marcelino@sbcoop.org<br><b>Address:</b> 777 Camino Pescadero, Isla Vista, CA 93117<br><b>Office Hours:</b> Mon–Fri, 1–5 PM</p>
+    <a href="https://www.sbcoop.org/housing.html" target="_blank" style="font-size:.88rem;font-weight:600;">Visit sbcoop.org →</a>
+    <p style="margin-top:10px;margin-bottom:2px;"><b>House Instagrams:</b></p>
+    <div class="ig-list">
+      <a href="https://www.instagram.com/mertonhouse" target="_blank">🏡 @mertonhouse</a>
+      <a href="https://instagram.com/bikogarage" target="_blank">✊ @bikogarage</a>
+      <a href="https://instagram.com/doloreshousecoop" target="_blank">🌿 @doloreshousecoop</a>
+      <a href="https://www.instagram.com/manleyhaus/" target="_blank">🌳 @manleyhaus</a>
+      <a href="https://www.instagram.com/officialnewmanhouse/" target="_blank">🌈 @officialnewmanhouse</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE 2: CRAIGSLIST ═══════════════ -->
+<div class="page" id="pg-cl">
+  <div class="header-bar"><h1 style="color:var(--c-sb);">🔗 Craigslist Listings ≤$1,000</h1></div>
+
+  <div class="info">Actual listings scraped April 15, 2026 with <b>direct links</b>. Craigslist posts expire — if a link is dead the listing was taken. Check the search pages at the bottom for fresh posts daily.</div>
+
+  <div class="sec-head"><div class="ico" style="background:#142640;">📍</div><h2 style="color:var(--c-sb);">Santa Barbara / Goleta / IV</h2><span class="sec-count cnt-sb">4</span></div>
+
+  <div class="cat-sb">
+  <div class="card"><div class="card-top"><span class="card-name">Santa Barbara Room</span><span class="card-price p-green">$750</span></div><div class="card-loc">📍 Santa Barbara</div><div class="card-desc">Room listing, details in post.</div><a class="card-link" href="https://santabarbara.craigslist.org/roo/d/santa-barbara-santa-barbara/7923866421.html" target="_blank" style="color:var(--c-sb);">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">One Master Bedroom — La Cumbre</span><span class="card-price p-yel">$850</span></div><div class="card-loc">📍 La Cumbre, Santa Barbara</div><div class="card-desc">Master bedroom for rent in the La Cumbre area.</div><a class="card-link" href="https://santabarbara.craigslist.org/roo/d/santa-barbara-one-master-bedroom-for/7920141932.html" target="_blank" style="color:var(--c-sb);">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">Small Attic Room — Victorian, Utils Included</span><span class="card-price p-yel">$900</span></div><div class="card-loc">📍 Downtown Santa Barbara</div><div class="card-desc">Small attic room in a large Victorian. All utilities included.</div><a class="card-link" href="https://santabarbara.craigslist.org/roo/d/santa-barbara-small-attic-room-in-large/7922940352.html" target="_blank" style="color:var(--c-sb);">Open listing →</a></div>
+
+  <div class="card" style="border-left:3px solid var(--c-free);"><div class="card-top"><span class="card-name">🆓 Goleta Room — Exchange for Part-Time Tasks</span><span class="card-price p-free">$0 FREE</span></div><div class="card-loc">📍 Goleta</div><div class="card-desc">Room offered in exchange for part-time tasks. Work-for-housing arrangement.</div><a class="card-link" href="https://santabarbara.craigslist.org/roo/d/santa-barbara-goleta-room-in-exchange/7923953410.html" target="_blank" style="color:var(--c-free);">Open listing →</a></div>
+  </div>
+
+  <div class="sec-head"><div class="ico" style="background:#302c14;">📍</div><h2 style="color:var(--c-lom);">Lompoc</h2><span class="sec-count cnt-lom">6</span></div>
+
+  <div class="cat-lom">
+  <div class="card"><div class="card-top"><span class="card-name">Room for Rent — Lompoc</span><span class="card-price p-green">$750</span></div><div class="card-loc">📍 Lompoc, CA</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/lompoc-room-for-rent-lompoc/7921817480.html" target="_blank" style="color:var(--c-lom);">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">Nice Room for Just $800</span><span class="card-price p-green">$800</span></div><div class="card-loc">📍 Lompoc</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/lompoc-nice-room-for-just-800/7921807082.html" target="_blank">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">Nice Room Ready for Rent</span><span class="card-price p-green">$800</span></div><div class="card-loc">📍 Lompoc</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/lompoc-nice-room-ready-for-rent/7921805923.html" target="_blank">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">Furnished Room for Rent</span><span class="card-price p-green">$800</span></div><div class="card-loc">📍 Lompoc, CA</div><div class="card-desc">Furnished room.</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/lompoc-furnished-room-for-rent/7918664245.html" target="_blank">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">Room for Rent — Lompoc</span><span class="card-price p-yel">$900</span></div><div class="card-loc">📍 Lompoc</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/lompoc-room-for-rent/7922737564.html" target="_blank">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">Lompoc Room — Mission Hills</span><span class="card-price p-yel">$900</span></div><div class="card-loc">📍 Lompoc, Mission Hills</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/lompoc-lompoc-room-for-rent-mission/7923564452.html" target="_blank" style="color:var(--c-lom);">Open listing →</a></div>
+  </div>
+
+  <div class="sec-head"><div class="ico" style="background:#221640;">📍</div><h2 style="color:var(--c-sm);">Santa Maria / Orcutt</h2><span class="sec-count cnt-sm">5</span></div>
+
+  <div class="cat-sm">
+  <div class="card"><div class="card-top"><span class="card-name">Estate Living — High-End Neighborhood, Shared</span><span class="card-price p-green">$650</span></div><div class="card-loc">📍 Santa Maria</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/santa-maria-estate-living-high-end/7919204104.html" target="_blank" style="color:var(--c-sm);">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">Room in Very Quiet House — No Pets, No Drugs</span><span class="card-price p-green">$700</span></div><div class="card-loc">📍 Santa Maria</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/santa-maria-room-in-very-quiet-house-no/7919141903.html" target="_blank" style="color:var(--c-sm);">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">Room for Rent — Santa Maria</span><span class="card-price p-green">$800</span></div><div class="card-loc">📍 Santa Maria</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/santa-maria-room-for-rent/7922570299.html" target="_blank" style="color:var(--c-sm);">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">Lakeside Living — Semi-Private Bath (Orcutt)</span><span class="card-price p-green">$800</span></div><div class="card-loc">📍 Orcutt</div><div class="card-desc">Rent reduced. Lakeside location with semi-private bath.</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/santa-maria-rent-reduced-lakeside/7921250172.html" target="_blank" style="color:var(--c-sm);">Open listing →</a></div>
+
+  <div class="card"><div class="card-top"><span class="card-name">Room in Santa Maria</span><span class="card-price p-yel">$805</span></div><div class="card-loc">📍 Santa Maria</div><a class="card-link" href="https://santamaria.craigslist.org/roo/d/santa-maria-room-for-rent-in-santa/7924760669.html" target="_blank" style="color:var(--c-sm);">Open listing →</a></div>
+  </div>
+
+  <div class="sec-head"><div class="ico" style="background:#1a2a3a;">🔄</div><h2>Live Search Pages</h2></div>
+  <div class="info">Bookmark these. Check daily — new posts appear constantly.</div>
+  <div class="res-card">
+    <div class="links">
+      <a href="https://santabarbara.craigslist.org/search/roo" target="_blank" style="color:var(--c-sb);">🔵 Craigslist — Santa Barbara Rooms & Shares →</a>
+      <a href="https://santamaria.craigslist.org/search/roo" target="_blank" style="color:var(--c-lom);">🟡 Craigslist — Santa Maria / Lompoc Rooms & Shares →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE 3: RESOURCES ═══════════════ -->
+<div class="page" id="pg-res">
+  <div class="header-bar"><h1 style="color:var(--c-res);">📚 Housing Resources</h1></div>
+
+  <div class="sec-head"><div class="ico" style="background:#2e2010;">🔍</div><h2 style="color:var(--c-res);">MyUniStop — UCSB Off-Campus</h2></div>
+  <div class="res-card" style="border-left:3px solid var(--c-res);">
+    <h3>myunistop.com</h3>
+    <p>Student-to-student housing board specifically for UCSB off-campus housing. Features include:</p>
+    <p>• <b>Budget filters</b> — set your price range (e.g. $800–$1,500)<br>
+    • <b>Room type filters</b> — single, double, triple<br>
+    • <b>Roommate matching</b> — post your profile and preferences<br>
+    • <b>Direct messaging</b> between students<br>
+    • <b>Both seekers and listers</b> — you can post that you're looking, or browse who has spots</p>
+    <p>Great for finding IV doubles at budget prices since it's student-to-student (no landlord markup).</p>
+    <a href="https://myunistop.com/allhousing-ucsb-offcampus/" target="_blank" style="font-size:.9rem;font-weight:600;">Open MyUniStop →</a>
+  </div>
+
+  <div class="sec-head"><div class="ico" style="background:#2e2010;">🏘️</div><h2 style="color:var(--c-res);">IV CSD — Renter Resources</h2></div>
+  <div class="res-card" style="border-left:3px solid var(--c-res);">
+    <h3>Isla Vista Community Services District</h3>
+    <p>Official renter resource hub for Isla Vista. 98%+ of IV housing is renter-occupied, so this is tailored to renters. Key resources:</p>
+    <p>• <b>Isla Vista Tenants Union (IVTU)</b> — tenant rights education, advocacy, dispute resolution<br>
+    • <b>Free Rental Housing Mediation & Legal Advice</b> — resolve disputes with landlords<br>
+    • <b>Model Roommate Agreement</b> — template for splitting costs/responsibilities<br>
+    • <b>Move-in / Move-out Support</b> — guides for transitions<br>
+    • <b>Housing forum links</b> — Facebook groups, Craigslist, other listing sites<br>
+    • <b>Leasing company directory</b> — compiled by AS Pardall Center</p>
+    <div class="links">
+      <a href="https://islavistacsd.ca.gov/renter-resources" target="_blank">🔗 IV CSD Renter Resources →</a>
+      <a href="https://islavistacsd.ca.gov/free-rental-housing-mediation-legal-advice" target="_blank">⚖️ Free Mediation & Legal Advice →</a>
+      <a href="https://docs.google.com/document/d/1lvbMDWN5rIPy3sRSsY1oQROk3bXJP4Z6/edit?usp=sharing&ouid=100101748477540191794&rtpof=true&sd=true" target="_blank">📄 Model Roommate Agreement →</a>
+      <a href="https://islavistacsd.ca.gov/move-in-2025" target="_blank">📦 Move-in Support →</a>
+      <a href="https://islavistacsd.ca.gov/move-out-2025" target="_blank">📦 Move-out Support →</a>
+    </div>
+  </div>
+
+  <div class="sec-head"><div class="ico" style="background:#2e2010;">🎓</div><h2 style="color:var(--c-res);">UCSB Basic Needs — Affordable Housing</h2></div>
+  <div class="res-card" style="border-left:3px solid var(--c-res);">
+    <h3>basicneeds.ucsb.edu</h3>
+    <p>UCSB's centralized resource for students facing housing insecurity. Covers on-campus, off-campus, cooperative, subsidized, and emergency housing. Key sub-pages:</p>
+    <p>• <b>Affordable Housing</b> — links to co-ops, SB Housing Authority workforce program, Duncan Group, city affordable housing programs<br>
+    • <b>Rapid Rehousing</b> — emergency/transitional housing, Safe Parking Program, shelters, DV housing<br>
+    • <b>Financial Assistance</b> — Financial Crisis Response Team (FCRT) for emergency grants, GSA Emergency Relief Grants, short-term loans<br>
+    • <b>Mediation</b> — free landlord/tenant and roommate dispute resolution<br>
+    • <b>Off-campus rental listings</b> via UCSB Housing Office (requires NetID)</p>
+    <div class="links">
+      <a href="https://basicneeds.ucsb.edu/resources/housing/affordable-housing" target="_blank">🏠 Affordable Housing Page →</a>
+      <a href="https://basicneeds.ucsb.edu/resources/housing/emergency-transitional-housing" target="_blank">🚨 Rapid Rehousing / Emergency →</a>
+      <a href="https://basicneeds.ucsb.edu/resources/housing/financial-assistance" target="_blank">💰 Financial Crisis Assistance →</a>
+      <a href="https://basicneeds.ucsb.edu/resources/housing/mediation" target="_blank">🤝 Mediation Services →</a>
+      <a href="https://rentallistings.housing.ucsb.edu/" target="_blank">🔍 UCSB Off-Campus Rental Listings (NetID) →</a>
+      <a href="https://www.housing.ucsb.edu/current-residents/community-rental-listings/overview" target="_blank">📞 Community Housing Office →</a>
+    </div>
+  </div>
+
+  <div class="res-card" style="margin-top:16px;border-color:var(--acc);">
+    <h3>📞 Key Contacts</h3>
+    <p style="line-height:1.8;">
+      <b>SBSHC Co-ops:</b> (805) 685-6964 · info@sbcoop.org<br>
+      <b>UCSB Housing Office:</b> (805) 893-4371 · housinginfo@housing.ucsb.edu<br>
+      <b>UCSB Financial Crisis Team:</b> fincrisis@sa.ucsb.edu<br>
+      <b>IV Tenants Union:</b> <a href="https://pardallcenter.as.ucsb.edu/isla-vista-community-resource-guide/housing-in-isla-vista/" target="_blank">AS Pardall Center</a><br>
+      <b>SB Housing Authority (Workforce):</b> <a href="https://hacsb.org/workforce/" target="_blank">hacsb.org/workforce</a>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════ NAV BAR ═══════════════ -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="go('pg-coops',this)"><span class="ico">🏠</span>Co-ops</button>
+  <button class="nav-btn" onclick="go('pg-cl',this)"><span class="ico">🔗</span>Craigslist</button>
+  <button class="nav-btn" onclick="go('pg-res',this)"><span class="ico">📚</span>Resources</button>
+</nav>
+
+<script>
+function go(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
